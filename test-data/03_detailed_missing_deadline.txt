@@ -1,0 +1,28 @@
+DETAILED TEST TRANSCRIPT 03 — OWNERS ASSIGNED, DEADLINES MISSING
+Meeting: Application Development Progress Meeting
+Date: 7 November 2026
+Participants: Meera (Lead), Rahul, Ayush, Rohan, Sana
+
+Meera: We have completed the initial planning. Today I want to confirm who is responsible for each remaining module. We are not fixing delivery dates in this meeting because the effort estimates are still being reviewed.
+
+Rahul: I will take responsibility for the frontend. This includes the dashboard, navigation, login screen, registration screen, profile page, and responsive layout. I will also connect the frontend pages to the backend endpoints once they are available.
+
+Ayush: I will handle the AI module. I will integrate Gemini, prepare the prompt template, parse the structured response, and handle cases where the model returns incomplete or invalid JSON. I will also create a few test transcripts to check whether the model identifies owners and deadlines correctly.
+
+Rohan: I will take care of the database. I will create the remaining tables, define the relationships, prepare database migrations, and write queries for storing meetings and action items.
+
+Sana: I will handle testing. I will prepare test scenarios for normal meetings, missing information, conflicting statements, duplicate tasks, and meetings where no action items are created. I will also record bugs and share them with the responsible developers.
+
+Meera: I will coordinate the backend integration and review the overall architecture. I will also check whether the data passed from the AI module matches the database structure.
+
+Rahul: I may need the final API response format before I can complete the integration.
+
+Ayush: I will share a sample response structure with Rahul, but I need to finish the first version of the prompt and output schema.
+
+Rohan: I also need the final task fields before I finalize the database table. We should agree on whether we store assignment status, deadline status, dependencies, and source statements.
+
+Meera: Good point. Ayush, please discuss the JSON fields with Rohan. Rahul, coordinate with Ayush for the API response format. Sana, prepare the test scenarios and share them with the team.
+
+Sana: Understood. I will prepare the test scenarios. We have not decided any completion dates for these tasks yet.
+
+Meera: Correct. Let's estimate the work first and set deadlines in our next meeting.

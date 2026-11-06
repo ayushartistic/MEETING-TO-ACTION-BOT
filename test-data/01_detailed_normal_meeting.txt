@@ -1,0 +1,29 @@
+DETAILED TEST TRANSCRIPT 01 — NORMAL MEETING (BASELINE)
+Meeting: Project Development Sprint Planning
+Date: 7 November 2026
+Time: 10:00 AM
+Participants: Rahul, Ayush, Rohan, Priya (Team Lead)
+
+Priya: Good morning, everyone. We need to finalize the work for this sprint because the internal demonstration is scheduled for next week. I want each person to clearly state what they will complete and by when. Please mention separate tasks if you are handling more than one thing.
+
+Rahul: I have completed the basic homepage structure. I will now finish the remaining frontend work, including the navigation bar, dashboard layout, responsive design for mobile screens, and the login and registration pages. I will complete the frontend implementation by Saturday, 14 November. I will also push the code to the shared Git repository by 6 PM that day so Ayush can review the integration points.
+
+Ayush: I have checked the Gemini API documentation and tested a basic request from my local environment. I will implement the Gemini API integration, including the request handler, response parsing, and error handling for failed API calls. I will complete the integration by Sunday, 15 November. I will also add a configuration file for the API key, but I will not commit the actual key to GitHub.
+
+Rohan: I have finalized the database tables. I will complete the database schema, including the users table, meeting records, task records, and relationships between meetings and tasks. I will prepare the initial database migration and test the basic create and retrieve operations. I will finish this work by Monday, 16 November.
+
+Priya: I will review the frontend code after Rahul pushes it. I will also review Ayush's API integration and Rohan's schema. I will complete the first round of code review by Tuesday, 17 November.
+
+Rahul: I can fix the frontend issues identified during the review, but I need the review comments first.
+
+Priya: That's fine. Once I share the comments on Tuesday, Rahul, please resolve the frontend-related comments by Wednesday, 18 November.
+
+Rahul: Yes, I will resolve those comments by Wednesday.
+
+Ayush: If the API response structure changes during testing, I may need to update the frontend integration. I will coordinate with Rahul directly.
+
+Priya: Please also prepare a short technical demonstration. I will prepare the demonstration slides by Thursday, 19 November. Rohan, please share the final database diagram with me by Wednesday, 18 November.
+
+Rohan: Yes, I will send the database diagram by Wednesday.
+
+Priya: Good. So we have clear owners and dates. We will meet again on Friday to review progress.

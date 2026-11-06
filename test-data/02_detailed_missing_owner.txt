@@ -1,0 +1,30 @@
+DETAILED TEST TRANSCRIPT 02 — TASKS WITH MISSING OWNERS
+Meeting: Project Readiness and Documentation Review
+Date: 7 November 2026
+Participants: Neha, Arjun, Kavya, Sameer
+
+Neha: Before we close the sprint, we need to list the remaining work. The database schema is still incomplete. The user table and meeting table have been created, but the task table and the relationship between users and tasks are still pending.
+
+Arjun: Yes, the database also needs sample records. Otherwise, we will not be able to test the dashboard with realistic data.
+
+Kavya: We should prepare a presentation for the faculty review. It needs the problem statement, architecture diagram, technology stack, screenshots, and a short explanation of the AI workflow.
+
+Sameer: The documentation is also outdated. The installation instructions still mention the old folder structure, and the API endpoints section does not include the latest routes.
+
+Neha: We also need to check the application on smaller screens. The dashboard looks fine on a laptop, but the cards overlap on mobile.
+
+Arjun: There is another issue. The error messages are not consistent. Sometimes the application displays a raw server error instead of a user-friendly message.
+
+Kavya: We should prepare a test report with screenshots of successful and failed test cases. That will be useful during the review.
+
+Sameer: The deployment configuration also needs attention. The environment variables are currently stored in a local file, and we need to document how to configure them safely on the server.
+
+Neha: We have quite a few things left. Can someone confirm who will take the database schema, presentation, documentation, responsive testing, error-message improvements, test report, and deployment configuration?
+
+Arjun: I think we should decide that after checking everyone's workload.
+
+Kavya: Agreed. I don't want to assign something without confirming with the person.
+
+Sameer: Let's discuss the owners in the next meeting. For now, just keep the list of pending work.
+
+Neha: Okay. No one is accepting these tasks in this meeting. We will assign them later.

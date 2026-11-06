@@ -1,0 +1,50 @@
+DETAILED TEST TRANSCRIPT 06 — COMPLEX MULTI-MEMBER MEETING
+Meeting: Full Project Sprint and Integration Planning
+Date: 7 November 2026
+Participants: Priya (Project Lead), Rahul (Frontend), Ayush (AI/Backend), Rohan (Database), Sana (Testing), Dev (Deployment)
+
+Priya: We need to plan the complete integration sequence. The frontend, AI service, database, testing, and deployment work are connected, so I want us to identify both the individual tasks and the dependencies. Please be specific about what you are committing to.
+
+Rahul: I will complete the dashboard, meeting upload screen, transcript preview, and task-list interface by 14 November. The upload screen will initially support pasted text and TXT files. I will also add loading and error states so the user knows whether the transcript is being processed.
+
+Ayush: I will complete the transcript-processing endpoint and Gemini integration by 15 November. The endpoint will accept transcript text, send it to Gemini, and return structured JSON containing the meeting summary, decisions, action items, owners, deadlines, dependencies, and unresolved questions.
+
+Rohan: I will finish the database schema by 13 November. It will include meeting records, task records, user information, task status, and a field for the original transcript. I will also add a relationship so that each action item can be traced back to its meeting.
+
+Rahul: I cannot complete the task-list interface until I know the final JSON structure. Ayush, can you share a sample response before the full endpoint is ready?
+
+Ayush: Yes. I will share the first JSON schema with Rahul and Rohan by 9 November. The final API endpoint will still be completed by 15 November.
+
+Rohan: Once I receive the schema, I can finalize the task fields. I will share the database connection details with Ayush after the schema is ready.
+
+Sana: I will prepare the test suite. It will include normal transcripts, missing owners, missing deadlines, vague dates, conflicting statements, duplicate tasks, multiple owners, and no-action meetings. I will also test malformed AI responses and empty transcript submissions.
+
+Priya: Sana, please prepare the first version of the test cases by 12 November. After the API is available, you can begin end-to-end testing.
+
+Sana: I can prepare the test cases by 12 November. I will start end-to-end testing after Ayush provides the working endpoint and Rohan's database integration is ready. I cannot give a final testing completion date until I see the build.
+
+Dev: I will prepare the deployment environment and server configuration. However, I cannot deploy the application until the API, database connection, and frontend integration are stable. I will prepare the deployment checklist by 16 November.
+
+Priya: Dev, the checklist is a separate task and can be completed before the application is ready. Please confirm that date.
+
+Dev: Yes, I will complete the deployment checklist by 16 November. Actual deployment will happen only after testing approval.
+
+Rahul: I will connect the frontend to the API after Ayush shares the endpoint. If the API response changes, I may need to update the task rendering logic.
+
+Ayush: I will avoid changing the agreed JSON field names after sharing the schema. If a change becomes necessary, I will inform Rahul and Rohan before updating the endpoint.
+
+Rohan: I will help Ayush test saving and retrieving the meeting and task records. We should verify that the original transcript and extracted tasks remain linked.
+
+Priya: Rohan, please complete the database save-and-retrieve test by 17 November, provided the API schema is available by 9 November.
+
+Rohan: Yes, I will complete that test by 17 November, assuming the schema is shared as planned.
+
+Sana: After the frontend and API are connected, I will test the complete flow: submit transcript, process with Gemini, validate the response, save records, and display the report. I will also check whether duplicate tasks are incorrectly removed across different meetings.
+
+Priya: Good. We also need a demonstration recording. I can prepare the demonstration script, but I am not committing to a recording date yet.
+
+Dev: One more thing: we should not put the Gemini API key in frontend code. It must remain on the backend.
+
+Ayush: Agreed. I will keep the API key in the backend environment configuration and add a check for missing configuration.
+
+Priya: Let's review progress on 18 November. If any dependency is delayed, the person responsible should notify the team rather than silently changing the deadline.

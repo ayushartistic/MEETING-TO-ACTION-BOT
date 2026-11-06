@@ -1,0 +1,755 @@
+{
+  "name": "Meeting-to-Action Bot - MVP",
+  "nodes": [
+    {
+      "parameters": {
+        "updates": [
+          "message"
+        ],
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegramTrigger",
+      "typeVersion": 1.5,
+      "position": [
+        -208,
+        -64
+      ],
+      "id": "141b3efb-3bbf-4fae-a7e4-f05fe38c2cc2",
+      "name": "Telegram Trigger",
+      "webhookId": "481b6fbf-1619-4418-af24-e28f7f6a83a8",
+      "credentials": {
+        "telegramApi": {
+          "id": "RtW6TTg81WhPfg3U",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "63169360-640e-41c0-8d40-a5a9a94fb33c",
+              "name": "input_type",
+              "value": "={{ $json.message?.text ? 'text' : ($json.message?.document ? 'document' : 'unknown') }}",
+              "type": "string"
+            },
+            {
+              "id": "55e6bee3-a2aa-4cfe-8cdc-27c8b51b5add",
+              "name": "transcript",
+              "value": "={{ $json.message?.text || '' }}",
+              "type": "string"
+            },
+            {
+              "id": "9b79d46b-9c61-469d-880b-86a8a2ca49e6",
+              "name": "chat_id",
+              "value": "={{ $json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "7aaed478-d607-4bf3-a054-ed51e154fe70",
+              "name": "user_id",
+              "value": "={{ $json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "e793cdfc-921f-4f4e-bb29-c9dac1f4d7c7",
+              "name": "message_id",
+              "value": "={{ $json.message.message_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        448,
+        0
+      ],
+      "id": "d63c634a-e750-41d6-b462-271f0aa18e5c",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nYou are an expert AI meeting analyst and project coordination assistant.\n\nYour responsibility is to analyze meeting transcripts and extract accurate, structured, actionable information.\n\nMEETING TRANSCRIPT:\n{{ $json.transcript }}\n\nAnalyze the transcript and extract the following information:\n\n1. MEETING TITLE\nIdentify the meeting title. If no explicit title exists, generate a short descriptive title based on the discussion.\n\n2. MEETING SUMMARY\nProvide a concise but informative summary of the meeting.\n\n3. DISCUSSION POINTS\nIdentify the major topics discussed, including proposals, concerns and ongoing discussions.\n\n4. DECISIONS\nExtract only decisions that were explicitly agreed upon or confirmed by participants.\nDo not treat suggestions as confirmed decisions.\n\n5. ACTION ITEMS\nIdentify actual tasks, commitments and responsibilities.\n\nFor each action item, extract:\n- task: Description of the task.\n- owner: Person explicitly accepting or assigned the responsibility. Use null if unknown.\n- deadline: Mentioned deadline. Use null if absent.\n- deadline_status: Confirmed, Missing or Ambiguous.\n- owner_status: Assigned or Missing.\n- priority: High, Medium, Low or Unknown.\n\nPRIORITY CLASSIFICATION:\n- High: Explicitly urgent, critical, blocking other work, or having a clearly critical deadline.\n- Medium: Important work with a stated commitment or reasonable deadline.\n- Low: Non-urgent or routine work.\n- Unknown: Insufficient information to determine priority.\n\nNever assign priority based merely on the perceived importance of a topic.\n\n6. OPEN QUESTIONS\nIdentify unresolved questions, pending decisions and topics requiring further discussion.\n\n7. CLARIFICATIONS REQUIRED\nIdentify missing or ambiguous information that needs confirmation, such as:\n- Missing task owners.\n- Missing deadlines.\n- Unclear dates.\n- Unconfirmed proposals.\n- Unclear responsibilities.\n\n8. CONFLICT DETECTION\nIdentify contradictory statements, commitments, deadlines, task ownership or decisions made by different participants.\n\nFor every conflict, provide:\n- conflict: Description of the contradiction.\n- involved_participants: Names of participants involved, if known.\n- explanation: Why the statements conflict.\n- severity: High, Medium or Low.\n\nDo not classify ordinary disagreements or unresolved questions as contradictions unless the statements are genuinely inconsistent.\nReturn an empty array if no conflicts are detected.\n\n9. RISK DETECTION\nIdentify potential project risks and blockers based on the transcript.\n\nFor every risk, provide:\n- risk: Description of the potential risk.\n- reason: Evidence or context from the transcript.\n- severity: High, Medium or Low.\n\nConsider:\n- Critical tasks without owners.\n- Important tasks without deadlines.\n- Unresolved technical decisions.\n- Dependencies that could delay work.\n- Explicitly mentioned blockers or resource constraints.\n\nDo not invent risks unsupported by the transcript.\n\nMULTILINGUAL UNDERSTANDING:\n- Understand English, Hindi and Hinglish written in Latin or Devanagari scripts.\n- Participants may switch between languages within the same sentence.\n- Extract the intended meaning accurately.\n- Return all extracted information in clear English.\n- Preserve participant names and technical terminology.\n- Do not mistake informal language for a lack of commitment.\n\n\nIMPORTANT ACCURACY RULES:\n\nGENERAL EXTRACTION:\n- Never fabricate information.\n- Only assign tasks when an actual commitment or responsibility is present.\n- A suggestion is not automatically a decision.\n- A discussion topic is not automatically an action item.\n- Assign owners only when explicitly identifiable.\n- Use null for unknown owners and deadlines.\n- Use Unknown when priority cannot be determined.\n- If no conflicts or risks exist, return empty arrays.\n- Avoid duplicate action items.\n- Keep extracted information concise, factual and traceable to the transcript.\n\nDEADLINE ACCURACY:\n- If no deadline is mentioned, use null and mark Missing.\n- If a relative deadline cannot be resolved because the meeting date is unavailable, mark Ambiguous.\n- Never assume the meeting date.\n- Preserve tentative deadlines and revised estimates separately when multiple dates are mentioned.\n- Never silently choose one date when participants provide conflicting estimates.\n- Mark the deadline as Ambiguous when the commitment is uncertain or multiple estimates exist.\n- Include the uncertainty in the deadline description.\n- Flag unresolved deadline disagreements in clarifications_required.\n- Distinguish confirmed commitments from tentative estimates.\n\nPRIORITY ACCURACY:\n- Assign High priority to explicitly urgent, critical or blocking tasks.\n- Assign Medium priority to important tasks with reasonable time constraints.\n- Assign Low priority to routine or non-urgent tasks.\n- Use Unknown when insufficient evidence exists.\n- Consider task dependencies and project impact, but do not automatically classify every important task as High.\n\nCONFLICT ACCURACY:\n- Identify genuine contradictions between statements, commitments, deadlines, responsibilities or decisions.\n- Do not classify ordinary disagreements, questions or unresolved proposals as confirmed conflicts.\n- Preserve the statements and participants involved.\n- Do not resolve a conflict by arbitrarily choosing one participant's statement.\n\nRISK ACCURACY:\n- Identify risks only when supported by evidence in the transcript.\n- Consider missing ownership, uncertain deadlines, technical blockers, resource constraints and dependencies.\n- Distinguish an existing problem from a potential future risk.\n- Do not invent probabilities, financial losses or consequences.\n- Avoid reporting the same underlying issue multiple times as separate risks unless they represent distinct impacts.\n\n\nOUTPUT REQUIREMENTS:\n\nReturn ONLY one valid JSON object.\nDo not use Markdown code fences.\nDo not include explanations outside the JSON object.\n\nThe JSON must contain exactly these top-level fields:\n\n{\n  \"meeting_title\": \"string\",\n  \"meeting_summary\": \"string\",\n  \"discussion_points\": [\"string\"],\n  \"decisions\": [\"string\"],\n  \"action_items\": [\n    {\n      \"task\": \"string\",\n      \"owner\": \"string or null\",\n      \"deadline\": \"string or null\",\n      \"deadline_status\": \"Confirmed, Missing or Ambiguous\",\n      \"owner_status\": \"Assigned or Missing\",\n      \"priority\": \"High, Medium, Low or Unknown\"\n    }\n  ],\n  \"open_questions\": [\"string\"],\n  \"clarifications_required\": [\"string\"],\n  \"conflicts_detected\": [\n    {\n      \"conflict\": \"string\",\n      \"involved_participants\": [\"string\"],\n      \"explanation\": \"string\",\n      \"severity\": \"High, Medium or Low\"\n    }\n  ],\n  \"risks\": [\n    {\n      \"risk\": \"string\",\n      \"reason\": \"string\",\n      \"severity\": \"High, Medium or Low\"\n    }\n  ]\n}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        800,
+        32
+      ],
+      "id": "d8a46b94-f37b-4daf-9fab-b01f687a7114",
+      "name": "Basic LLM Chain"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        848,
+        192
+      ],
+      "id": "28746aaf-12cf-4a65-9b32-3055666e06ef",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "jzs3mgWiWl9LRyfW",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst rawOutput = $json.text;\n\n// 1. Parse Gemini's JSON response\nlet meetingData;\n\ntry {\n  meetingData = JSON.parse(rawOutput);\n} catch (error) {\n  throw new Error(\n    \"Invalid JSON received from Gemini: \" + error.message\n  );\n}\n\n// 2. Validate required top-level fields\nconst requiredFields = [\n  \"meeting_title\",\n  \"meeting_summary\",\n  \"discussion_points\",\n  \"decisions\",\n  \"action_items\",\n  \"open_questions\",\n  \"clarifications_required\",\n  \"conflicts_detected\",\n  \"risks\"\n];\n\nfor (const field of requiredFields) {\n  if (!(field in meetingData)) {\n    throw new Error(`Missing required field: ${field}`);\n  }\n}\n\n// 3. Validate array fields\nconst arrayFields = [\n  \"discussion_points\",\n  \"decisions\",\n  \"action_items\",\n  \"open_questions\",\n  \"clarifications_required\",\n  \"conflicts_detected\",\n  \"risks\"\n];\n\nfor (const field of arrayFields) {\n  if (!Array.isArray(meetingData[field])) {\n    throw new Error(`${field} must be an array`);\n  }\n}\n\n// 4. Validate individual action items\nfor (const [index, item] of meetingData.action_items.entries()) {\n  const requiredActionFields = [\n    \"task\",\n    \"owner\",\n    \"deadline\",\n    \"deadline_status\",\n    \"owner_status\",\n    \"priority\"\n  ];\n\n  for (const field of requiredActionFields) {\n    if (!(field in item)) {\n      throw new Error(\n        `Action item ${index + 1} is missing ${field}`\n      );\n    }\n  }\n\n  if (![\"Confirmed\", \"Missing\", \"Ambiguous\"].includes(item.deadline_status)) {\n    throw new Error(`Invalid deadline_status in action item ${index + 1}`);\n  }\n\n  if (![\"Assigned\", \"Missing\"].includes(item.owner_status)) {\n    throw new Error(`Invalid owner_status in action item ${index + 1}`);\n  }\n\n  if (![\"High\", \"Medium\", \"Low\", \"Unknown\"].includes(item.priority)) {\n    throw new Error(`Invalid priority in action item ${index + 1}`);\n  }\n}\n\n// 5. Validate conflict and risk records\nfor (const [index, conflict] of meetingData.conflicts_detected.entries()) {\n  if (\n    typeof conflict.conflict !== \"string\" ||\n    !Array.isArray(conflict.involved_participants) ||\n    typeof conflict.explanation !== \"string\" ||\n    ![\"High\", \"Medium\", \"Low\"].includes(conflict.severity)\n  ) {\n    throw new Error(`Invalid conflict record at index ${index}`);\n  }\n}\n\nfor (const [index, risk] of meetingData.risks.entries()) {\n  if (\n    typeof risk.risk !== \"string\" ||\n    typeof risk.reason !== \"string\" ||\n    ![\"High\", \"Medium\", \"Low\"].includes(risk.severity)\n  ) {\n    throw new Error(`Invalid risk record at index ${index}`);\n  }\n}\n\n// 6. Retrieve normalized input metadata\nconst telegramData = $(\"Edit Fields\").isExecuted\n  ? $(\"Edit Fields\").item.json\n  : $(\"Edit Fields1\").item.json;\n\n// 7. Generate a deterministic meeting ID\nconst meetingId =\n  `M-${telegramData.chat_id}-${telegramData.message_id}`;\n\n// 8. Return the complete structured output\nreturn {\n  json: {\n    ...telegramData,\n    ...meetingData,\n    meeting_id: meetingId\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1088,
+        16
+      ],
+      "id": "0e673946-994e-4315-8d1e-5dd26176548a",
+      "name": "Code in JavaScript"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8",
+          "mode": "list",
+          "cachedResultName": "Meeting_Action_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Meeting History",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Meeting ID": "={{ $json.meeting_id }}",
+            "Meeting Title": "={{ $json.meeting_title }}",
+            "Meeting Date": "={{ $json.meeting_date || '' }}",
+            "Summary": "={{ $json.meeting_summary }}",
+            "Discussion Points": "={{ $json.discussion_points.join('\\n') }}",
+            "Decisions": "={{ $json.decisions.join('\\n') }}",
+            "Open Questions": "={{ $json.open_questions.join('\\n') }}",
+            "Clarifications Required": "={{ $json.clarifications_required.join('\\n') }}",
+            "Conflicts": "={{ $json.conflicts_detected.map(c => c.conflict + \" [\" + c.severity + \"]: \" + c.explanation + \" (Participants: \" + c.involved_participants.join(\", \") + \")\").join(\"\\n\") }}",
+            "Risks": "={{ $json.risks.map(r => r.risk + \" [\" + r.severity + \"]: \" + r.reason).join(\"\\n\") }}",
+            "Processing Status": "Processed",
+            "Telegram User": "={{ $json.user_id }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Meeting ID",
+              "displayName": "Meeting ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting Title",
+              "displayName": "Meeting Title",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Meeting Date",
+              "displayName": "Meeting Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Summary",
+              "displayName": "Summary",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Discussion Points",
+              "displayName": "Discussion Points",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Decisions",
+              "displayName": "Decisions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Open Questions",
+              "displayName": "Open Questions",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Clarifications Required",
+              "displayName": "Clarifications Required",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Conflicts",
+              "displayName": "Conflicts",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Risks",
+              "displayName": "Risks",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Processing Status",
+              "displayName": "Processing Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Telegram User",
+              "displayName": "Telegram User",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Transcript Hash",
+              "displayName": "Transcript Hash",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1648,
+        -16
+      ],
+      "id": "1fa14729-f0f4-4612-a5e5-73497b8a63b2",
+      "name": "Append row in sheet",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "beJENBaMcc3CvfDy",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $json.message.text }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    },
+                    "id": "68f0129b-dd9d-47d3-ad45-67ca373122e5"
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Text Input"
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 4
+                },
+                "conditions": [
+                  {
+                    "id": "cffea4ae-3982-487c-adab-c32360963812",
+                    "leftValue": "=\t{{ $json.message.document }}",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "exists",
+                      "singleValue": true
+                    }
+                  }
+                ],
+                "combinator": "and"
+              },
+              "renameOutput": true,
+              "outputKey": "Document Input"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.5,
+      "position": [
+        0,
+        32
+      ],
+      "id": "97e2ff16-73da-460b-a1b5-e4de4450f9aa",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "resource": "file",
+        "fileId": "={{ $json.message.document.file_id }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        128,
+        240
+      ],
+      "id": "2e5c226a-54ed-4f9e-832d-b5a861e51c4f",
+      "name": "Get a file",
+      "webhookId": "0e40e6b5-62e3-4ee1-b9b8-c1f6103abfac",
+      "credentials": {
+        "telegramApi": {
+          "id": "RtW6TTg81WhPfg3U",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "text",
+        "destinationKey": "text",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.extractFromFile",
+      "typeVersion": 1.2,
+      "position": [
+        368,
+        224
+      ],
+      "id": "b5f42012-be97-414a-8efb-4b28fd1ab889",
+      "name": "Extract from File"
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "0eb76230-8c42-4cd7-ab6e-853c29817401",
+              "name": "input_type",
+              "value": "document",
+              "type": "string"
+            },
+            {
+              "id": "bed52bd8-bc5b-4f33-a33c-7feffff18393",
+              "name": "transcript",
+              "value": "={{ $json.text }}",
+              "type": "string"
+            },
+            {
+              "id": "ee648d3d-daf1-4c3e-b2b1-91f31c8cf6f9",
+              "name": "chat_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.chat.id }}",
+              "type": "number"
+            },
+            {
+              "id": "10da8d88-be74-4371-9662-464b5885444d",
+              "name": "user_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.from.id }}",
+              "type": "number"
+            },
+            {
+              "id": "65293606-e765-42bb-92c8-9d34fd41c73e",
+              "name": "message_id",
+              "value": "={{ $('Telegram Trigger').item.json.message.message_id }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.5,
+      "position": [
+        592,
+        224
+      ],
+      "id": "bd772b69-a877-4d27-b0b7-10b7fecaf7df",
+      "name": "Edit Fields1"
+    },
+    {
+      "parameters": {
+        "fieldToSplitOut": "action_items",
+        "include": "allOtherFields",
+        "options": {
+          "destinationFieldName": "action_items"
+        }
+      },
+      "type": "n8n-nodes-base.splitOut",
+      "typeVersion": 1.1,
+      "position": [
+        1328,
+        192
+      ],
+      "id": "8cb2c9f5-2623-4ccc-bb69-46ce75d7e302",
+      "name": "Split Out"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8",
+          "mode": "list",
+          "cachedResultName": "Meeting_Action_Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": 1464307849,
+          "mode": "list",
+          "cachedResultName": "Action items",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1BsTFPXlE8bYR9ku3Nazk14EYzmNEJz1N1RQObQ4siM8/edit#gid=1464307849"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Task ID": "={{ $json.meeting_id + '-T' + $itemIndex }}",
+            "Meeting ID": "={{ $json.meeting_id }}",
+            "Meeting Date": "={{ $json.meeting_date || '' }}",
+            "Task": "={{ $json.action_items.task }}",
+            "Owner": "={{ $json.action_items.owner || '' }}",
+            "Deadline": "={{ $json.action_items.deadline || '' }}",
+            "Owner Status": "={{ $json.action_items.owner_status }}",
+            "Deadline Status": "={{ $json.action_items.deadline_status }}",
+            "Priority": "={{ $json.action_items.priority }}",
+            "Task Status": "Pending"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Task ID",
+              "displayName": "Task ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Meeting ID",
+              "displayName": "Meeting ID",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Meeting Date",
+              "displayName": "Meeting Date",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task",
+              "displayName": "Task",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Owner",
+              "displayName": "Owner",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deadline",
+              "displayName": "Deadline",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Owner Status",
+              "displayName": "Owner Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Deadline Status",
+              "displayName": "Deadline Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Priority",
+              "displayName": "Priority",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            },
+            {
+              "id": "Task Status",
+              "displayName": "Task Status",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true,
+              "removed": false
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.7,
+      "position": [
+        1552,
+        192
+      ],
+      "id": "0336e71f-2ea5-40ad-af59-47d44aa397b3",
+      "name": "Append row in sheet1",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "beJENBaMcc3CvfDy",
+          "name": "Google Sheets account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Telegram Trigger": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Basic LLM Chain": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Split Out",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Get a file": {
+      "main": [
+        [
+          {
+            "node": "Extract from File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract from File": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split Out": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1",
+    "binaryMode": "separate"
+  },
+  "versionId": "4109d48c-c32d-4a2c-8707-18810b9a9d3c",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "7407e3411c46ce849ca73665045e4bde0fe3e2909dcb3a1120a771d1e458235e"
+  },
+  "nodeGroups": [],
+  "id": "Y7sZO3iOXmbhYEok",
+  "tags": []
+}

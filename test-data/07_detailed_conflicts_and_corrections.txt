@@ -1,0 +1,46 @@
+DETAILED TEST TRANSCRIPT 07 — CONFLICTING INFORMATION AND LATER CORRECTIONS
+Meeting: Sprint Review and Deadline Revision
+Date: 7 November 2026
+Participants: Rahul, Ayush, Rohan, Priya (Lead), Sana
+
+Priya: Let's review the dates from the previous discussion. Rahul, you were assigned the frontend dashboard. What is your current completion estimate?
+
+Rahul: I said Friday in the earlier discussion, so I am planning to finish it by Friday, 13 November.
+
+Rohan: I thought the team agreed on Saturday because the dashboard depends on the updated API response. I have the Saturday date in my notes.
+
+Rahul: Let me check the project chat. Yes, you're right. I had initially said Friday, but after discussing the API dependency I confirmed Saturday. The final deadline for the dashboard is Saturday, 14 November.
+
+Priya: Please use Saturday as the current deadline. We should retain the fact that the earlier Friday date was corrected, but the active deadline is Saturday.
+
+Ayush: I will complete the Gemini API response parser by 12 November. The parser depends on the final prompt structure. I can prepare the initial version now, but I need Priya to confirm the required output fields.
+
+Priya: The required fields are meeting summary, decisions, action items, owner, deadline, dependencies, conflicts, and unresolved questions. I will confirm the schema in the team document today.
+
+Ayush: Once I receive that confirmation, I will complete the parser by 12 November. If the schema is delayed, I will inform everyone because it may affect the integration date.
+
+Rohan: I will complete the database migration by 11 November. However, the task table currently has a single owner field. We discussed supporting multiple owners, but that decision was not finalized.
+
+Sana: We need multiple-owner support for shared tasks. In the complex meeting, Rahul and Rohan were both responsible for one testing activity.
+
+Priya: I agree that we need to support shared ownership. Let's add a list of assignees to the design. Rohan, update the schema accordingly.
+
+Rohan: Okay. I will update the schema by 12 November, not 11 November, because the multiple-owner change affects the migration.
+
+Priya: That is the revised date. Please treat 12 November as the active deadline for the schema update.
+
+Sana: I will prepare test cases by 13 November. I can test the schema after Rohan updates it, but full end-to-end testing depends on Ayush's parser and Rahul's frontend integration.
+
+Rahul: I can start connecting the frontend once Ayush shares a stable sample response. I will not wait for the entire backend to be finished if the sample schema is confirmed.
+
+Ayush: I can share a stable sample response by 9 November. The actual parser will be completed by 12 November.
+
+Priya: Good. One more issue: the presentation was earlier assigned to Sana, but she has already said she is responsible for testing. Does she still have time to prepare it?
+
+Sana: I cannot take the presentation. I can provide testing screenshots and results, but I cannot own the slides.
+
+Priya: Then the presentation owner is not confirmed. We will decide that separately. Do not keep Sana as the owner.
+
+Rohan: Also, the deployment date written in the old plan is 20 November. That date was only a tentative target, not a confirmed commitment.
+
+Priya: Correct. We have not approved a deployment date. Deployment depends on end-to-end testing and approval. Keep 20 November as a tentative planning note, not a confirmed deadline.

@@ -1,0 +1,1154 @@
+# PRODUCT REQUIREMENTS DOCUMENT (PRD)
+# Meeting-to-Action Bot for Student Teams
+
+**Project Name:** Meeting-to-Action Bot  
+**Working Repository Name:** `meeting-to-action-bot`  
+**Document Type:** Product Requirements Document  
+**Version:** 1.0  
+**Date:** 6 November 2026  
+**Project Stage:** MVP Development / Hackathon Shortlisting  
+**Primary Platform:** n8n + Telegram + Google Gemini + Google Sheets  
+**Target Users:** Student teams, project groups, hackathon teams, and collaborative working groups
+
+---
+
+# 1. Executive Summary
+
+Meeting-to-Action Bot is an AI-powered meeting intelligence and task extraction system designed to convert unstructured meeting transcripts into structured, actionable information.
+
+Student teams frequently conduct discussions about project progress, task allocation, deadlines, decisions, and upcoming work. However, important information often gets lost in lengthy conversations. Team members may forget assigned responsibilities, misunderstand deadlines, or fail to document decisions.
+
+The proposed solution allows a user to submit a meeting transcript to a Telegram bot. The system processes the transcript using Google Gemini, identifies important meeting information, extracts action items, detects missing information, and stores the resulting records in Google Sheets.
+
+The system then sends a structured meeting summary to the user through Telegram.
+
+The primary objective is to eliminate the manual effort involved in converting meeting discussions into organized tasks and records.
+
+**Core product principle:**
+
+Convert meeting conversations into structured, trackable, and actionable information with minimal manual effort.
+
+---
+
+# 2. Problem Statement
+
+Student teams regularly conduct meetings to discuss:
+
+- Project progress.
+- Technical implementation.
+- Task distribution.
+- Upcoming deadlines.
+- Problems and blockers.
+- Important decisions.
+- Future development plans.
+
+Despite these discussions, several problems occur:
+
+1. **Information loss:** Important decisions and discussion points are forgotten after meetings.
+2. **Unclear responsibilities:** Tasks are discussed without explicitly assigning an owner.
+3. **Missing deadlines:** Teams agree to complete work but fail to establish clear deadlines.
+4. **Poor documentation:** Meeting notes are either not maintained or require manual effort.
+5. **Lack of accountability:** Team members may not remember their assigned responsibilities.
+6. **Unstructured communication:** Important information remains buried inside lengthy chat messages or transcripts.
+7. **Repeated work:** Teams may discuss or assign tasks that have already been recorded.
+
+Traditional meeting minutes require someone to manually listen, understand, summarize, and document the entire discussion.
+
+This process is time-consuming and prone to human error.
+
+## Proposed Solution
+
+A Telegram-based AI assistant that accepts meeting transcripts and automatically:
+
+- Summarizes the meeting.
+- Extracts important decisions.
+- Identifies actionable tasks.
+- Detects assigned owners and deadlines.
+- Flags missing or ambiguous information.
+- Stores tasks in a centralized Google Sheets tracker.
+- Sends the processed meeting report to Telegram.
+
+---
+
+# 3. Product Vision
+
+To build a lightweight AI-powered meeting assistant that makes student team collaboration more organized, accountable, and efficient.
+
+The product should eventually function as a bridge between team discussions and actual execution.
+
+Instead of merely summarizing what people said, it should identify what needs to happen next.
+
+---
+
+# 4. Target Users
+
+## Primary Users
+
+**Student project teams**
+
+Teams working on:
+- College projects.
+- Hackathons.
+- Technical competitions.
+- Research assignments.
+- Final-year projects.
+- Group presentations.
+
+## Secondary Users
+
+- College clubs and technical societies.
+- Startup teams.
+- Small development teams.
+- Remote collaborative groups.
+
+## Example User Scenario
+
+A team of three students conducts a meeting about their hackathon project.
+
+During the discussion:
+
+- Member A agrees to develop the frontend by Saturday.
+- Member B agrees to integrate the Gemini API.
+- Member C discusses database design but does not accept a specific responsibility.
+- The team decides to use Google Sheets for storing project records.
+- The team postpones the authentication discussion.
+
+After the meeting, a member uploads the transcript to the Telegram bot.
+
+The system extracts:
+
+- Frontend development — Member A — Saturday.
+- Gemini API integration — Member B — deadline not specified.
+- Database design — owner not assigned.
+- Decision — Google Sheets will be used.
+- Open question — authentication approach remains undecided.
+
+The system stores the tasks and sends a structured report to Telegram.
+
+---
+
+# 5. Product Scope
+
+The project will be developed in two stages.
+
+## Stage 1: MVP (Immediate Development)
+
+The MVP must demonstrate a complete, working end-to-end workflow.
+
+| Feature | Priority |
+|---|---|
+| Telegram bot input | P0 |
+| Accept pasted meeting transcripts | P0 |
+| Accept TXT transcript uploads | P0 |
+| Input validation | P0 |
+| Gemini-based meeting analysis | P0 |
+| Meeting summary generation | P0 |
+| Decision extraction | P0 |
+| Action-item extraction | P0 |
+| Owner identification | P0 |
+| Deadline identification | P0 |
+| Missing owner/deadline detection | P0 |
+| Structured JSON output | P0 |
+| Google Sheets integration | P0 |
+| Telegram summary delivery | P0 |
+| Invalid AI response handling | P1 |
+| Duplicate transcript/task prevention | P1 |
+| Ambiguous deadline detection | P1 |
+| Processing error notifications | P1 |
+
+P0 features are essential for the initial working demonstration. P1 features should be implemented after the core pipeline works.
+
+## Stage 2: Future Enhancements
+
+These features are not mandatory for the initial submission.
+
+| Feature | Priority |
+|---|---|
+| Trello integration | P2 |
+| Streamlit dashboard | P2 |
+| Task status tracking | P2 |
+| Automatic deadline reminders | P2 |
+| Member-wise task analytics | P2 |
+| Google Meet transcript retrieval | P2 |
+| Audio-to-text transcription | P2 |
+| Multiple meeting history views | P2 |
+| Task reassignment | P3 |
+| Multi-agent architecture | P3 |
+
+**Scope restriction:** Do not spend initial development time on a dashboard, Trello integration, speech recognition, or a complex multi-agent architecture. The working Telegram-to-Gemini-to-Google-Sheets pipeline takes priority.
+
+---
+
+# 6. Functional Requirements
+
+## FR-01: Telegram Input Interface
+
+The system must provide a Telegram bot through which users can submit meeting transcripts.
+
+Supported input methods:
+
+1. Pasting transcript text directly into the Telegram chat.
+2. Uploading a `.txt` transcript file.
+
+The Telegram bot acts as the primary user interface.
+
+The system should identify the input type and route it through the appropriate processing branch.
+
+## FR-02: Input Validation
+
+Before sending the transcript to Gemini, the system must validate the input.
+
+Validation requirements:
+
+- Reject empty messages.
+- Reject unsupported file types.
+- Reject empty TXT files.
+- Detect excessively short or unusable transcripts.
+- Handle file-download failures.
+- Provide meaningful error messages.
+
+Example:
+
+**Invalid input response:**
+
+"Unable to process this input. Please provide a valid meeting transcript as text or a TXT file."
+
+The system should not send invalid content to the AI processing stage.
+
+## FR-03: AI-Based Meeting Analysis
+
+Google Gemini will analyze the transcript and extract structured meeting information.
+
+The model must identify:
+
+1. Meeting title, if available.
+2. Meeting summary.
+3. Important discussion points.
+4. Key decisions.
+5. Action items.
+6. Assigned owners.
+7. Deadlines.
+8. Priority, where reasonably inferable.
+9. Missing information.
+10. Open questions.
+11. Ambiguous statements.
+
+The AI must distinguish between:
+
+- A discussion point.
+- A confirmed decision.
+- An actionable task.
+- An unresolved question.
+
+It must not convert every discussion point into an action item.
+
+### Important Extraction Rules
+
+**Missing owner:**
+
+If a task is discussed but no person is explicitly assigned, return `null` for the owner.
+
+**Missing deadline:**
+
+If no deadline is specified, return `null` for the deadline.
+
+**Ambiguous deadline:**
+
+If the transcript says "next Friday" but the meeting date or intended interpretation is unavailable, mark the deadline as ambiguous rather than inventing an exact date.
+
+**Uncertain assignment:**
+
+Do not assume that the person discussing a task is necessarily responsible for completing it.
+
+**Priority:**
+
+Infer priority only when the transcript provides sufficient context. Otherwise, use `Unknown`.
+
+## FR-04: Structured AI Output
+
+Gemini must return machine-readable JSON.
+
+The expected structure is:
+
+```json
+{
+  "meeting_title": "Project Planning Meeting",
+  "meeting_summary": "The team discussed project development and task distribution.",
+  "discussion_points": [
+    "Frontend development progress was discussed."
+  ],
+  "decisions": [
+    "The team decided to use Google Sheets."
+  ],
+  "action_items": [
+    {
+      "task": "Develop the frontend interface",
+      "owner": "Member A",
+      "deadline": "2026-11-07",
+      "deadline_status": "Confirmed",
+      "owner_status": "Assigned",
+      "priority": "High"
+    },
+    {
+      "task": "Integrate Gemini API",
+      "owner": "Member B",
+      "deadline": null,
+      "deadline_status": "Missing",
+      "owner_status": "Assigned",
+      "priority": "Medium"
+    },
+    {
+      "task": "Design the database schema",
+      "owner": null,
+      "deadline": null,
+      "deadline_status": "Missing",
+      "owner_status": "Missing",
+      "priority": "Unknown"
+    }
+  ],
+  "open_questions": [
+    "Which authentication approach should be implemented?"
+  ],
+  "clarifications_required": [
+    "Who will be responsible for database schema design?",
+    "What is the deadline for Gemini API integration?"
+  ]
+}
+```
+
+This is an illustrative output. Actual values must be derived from the submitted transcript.
+
+The JSON must not be returned as a nested JSON string inside a `text` property.
+
+The downstream n8n workflow must receive directly accessible structured fields.
+
+## FR-05: AI Response Validation
+
+After receiving the Gemini response, the workflow must validate:
+
+- Whether the response is valid JSON.
+- Whether required top-level fields exist.
+- Whether action items follow the expected structure.
+- Whether owners and deadlines have appropriate values.
+- Whether missing information is represented correctly.
+
+If the AI response is malformed, the system must not proceed with database insertion.
+
+It should either:
+1. Attempt a controlled correction/retry, or
+2. Send a processing failure notification to Telegram.
+
+## FR-06: Google Sheets Integration
+
+Google Sheets will act as the MVP's lightweight persistent database.
+
+The system should maintain two worksheets.
+
+### Worksheet 1: Action Items
+
+| Column | Description |
+|---|---|
+| Task ID | Unique identifier for each task |
+| Meeting ID | Identifier of the originating meeting |
+| Meeting Date | Date of meeting processing |
+| Task | Extracted action item |
+| Owner | Assigned team member |
+| Deadline | Extracted deadline |
+| Owner Status | Assigned / Missing |
+| Deadline Status | Confirmed / Missing / Ambiguous |
+| Priority | High / Medium / Low / Unknown |
+| Task Status | Pending / In Progress / Completed |
+
+### Worksheet 2: Meeting History
+
+| Column | Description |
+|---|---|
+| Meeting ID | Unique meeting identifier |
+| Meeting Title | Extracted title |
+| Meeting Date | Meeting or processing date |
+| Summary | Meeting summary |
+| Decisions | Extracted decisions |
+| Open Questions | Unresolved discussion points |
+| Processing Status | Success / Failed |
+| Telegram User | Telegram sender identifier |
+
+The Google Sheet should remain readable and accessible to authorized team members.
+
+## FR-07: Duplicate Prevention
+
+The system should avoid storing the same transcript repeatedly.
+
+Proposed approach:
+
+1. Normalize transcript text.
+2. Generate a deterministic Meeting ID using a hash of the normalized transcript.
+3. Check whether the Meeting ID already exists.
+4. Generate Task IDs from the Meeting ID and normalized task descriptions.
+5. Check existing Task IDs before appending new records.
+
+If a transcript is submitted again, the bot should recognize it and avoid creating duplicate meeting/task records.
+
+For the MVP, a lookup-before-append mechanism is acceptable.
+
+Note: Separate lookup and append operations are not atomic. Concurrent submissions could still create duplicates. This limitation should be documented if necessary.
+
+## FR-08: Telegram Output
+
+After successful processing, the system should send a structured report to Telegram.
+
+### Expected Output Format
+
+**MEETING ANALYSIS REPORT**
+
+**Meeting:** Project Planning Meeting
+
+**Summary:**
+The team discussed project development, frontend implementation, and API integration.
+
+**Key Decisions:**
+1. Google Sheets will be used for task tracking.
+2. Gemini will handle transcript analysis.
+
+**Action Items:**
+
+| Task | Owner | Deadline |
+|---|---|---|
+| Develop frontend | Member A | 7 Nov |
+| Integrate Gemini API | Member B | Not specified |
+| Design database | Not assigned | Not specified |
+
+**Clarifications Required:**
+- Who will handle database design?
+- What is the deadline for API integration?
+
+**Storage Status:** Successfully recorded in Google Sheets.
+
+The Telegram message should be readable, concise, and properly formatted.
+
+If no action items are identified, the system should report that explicitly rather than generating artificial tasks.
+
+## FR-09: Error Handling
+
+The system must handle common failure conditions.
+
+| Failure | Expected Behaviour |
+|---|---|
+| Empty transcript | Reject input |
+| Unsupported file | Inform user |
+| Telegram file download failure | Notify user |
+| Gemini API failure | Report processing failure |
+| Invalid Gemini JSON | Reject or retry |
+| Missing required fields | Reject invalid response |
+| Google Sheets failure | Report storage failure |
+| Duplicate transcript | Avoid duplicate insertion |
+| Telegram output failure | Log/report delivery failure where possible |
+
+A processing failure must not be reported as a successful task insertion.
+
+---
+
+# 7. System Architecture
+
+## 7.1 Technology Stack
+
+| Component | Technology | Responsibility |
+|---|---|---|
+| User interface | Telegram Bot | Accept transcripts and deliver reports |
+| Workflow orchestration | n8n | Execute the complete processing pipeline |
+| AI engine | Google Gemini API | Analyze transcripts and extract information |
+| Persistent storage | Google Sheets | Store meeting records and tasks |
+| Source control | GitHub | Store workflow exports, documentation, schemas, and evidence |
+| Optional dashboard | Streamlit | Future task visualization and analytics |
+
+## 7.2 High-Level Architecture
+
+```text
+             USER / STUDENT TEAM
+                      |
+                      |
+                      v
+              TELEGRAM BOT
+           (Text / TXT Upload)
+                      |
+                      v
+                n8n WORKFLOW
+                      |
+          +-----------+-----------+
+          |                       |
+          v                       v
+    Input Validation       File Extraction
+          |                       |
+          +-----------+-----------+
+                      |
+                      v
+              GOOGLE GEMINI API
+                      |
+                      v
+             STRUCTURED JSON
+                      |
+                      v
+              JSON VALIDATION
+                      |
+                      v
+            DUPLICATE DETECTION
+                      |
+                      v
+             GOOGLE SHEETS
+            (Meeting + Tasks)
+                      |
+                      v
+              TELEGRAM BOT
+                      |
+                      v
+          STRUCTURED MEETING REPORT
+```
+
+## 7.3 Component Responsibilities
+
+### Telegram
+
+- Receives meeting transcripts.
+- Accepts text and TXT documents.
+- Sends summaries and processing notifications.
+- Serves as the primary communication interface.
+
+### n8n
+
+- Listens for Telegram messages.
+- Identifies the input format.
+- Downloads and extracts files.
+- Validates the input.
+- Sends transcript content to Gemini.
+- Processes the AI response.
+- Checks for duplicates.
+- Inserts records into Google Sheets.
+- Sends the final Telegram report.
+
+### Google Gemini
+
+- Understands natural-language meeting discussions.
+- Extracts decisions and tasks.
+- Identifies owners and deadlines.
+- Detects ambiguity and missing information.
+- Generates meeting summaries.
+- Returns structured JSON.
+
+### Google Sheets
+
+- Stores meeting history.
+- Stores action items.
+- Provides a centralized, readable task tracker.
+- Acts as persistent storage for the MVP.
+
+---
+
+# 8. Proposed n8n Workflow
+
+The following is the recommended workflow design.
+
+Node names are conceptual. Exact node configuration may differ depending on the installed n8n version and available integrations.
+
+## Main Workflow
+
+1. **Telegram Trigger**
+   - Listens for incoming messages and documents.
+
+2. **IF / Switch**
+   - Determines whether the input contains text or a document.
+
+3. **Text Processing Branch**
+   - Extracts the pasted transcript.
+
+4. **Document Processing Branch**
+   - Telegram Get File.
+   - Download TXT document.
+   - Extract From File.
+
+5. **Edit Fields**
+   - Normalize the transcript and relevant Telegram metadata.
+
+6. **IF — Input Validation**
+   - Reject empty or invalid transcripts.
+
+7. **Gemini / HTTP Request**
+   - Sends transcript to Gemini with the extraction prompt and expected JSON schema.
+
+8. **Code Node — JSON Validation**
+   - Parses and validates the response.
+   - Confirms required fields and data types.
+
+9. **IF — Valid AI Response**
+   - Valid response continues.
+   - Invalid response goes to the error-handling branch.
+
+10. **Duplicate Detection**
+    - Generate Meeting ID.
+    - Search for an existing Meeting ID.
+
+11. **Google Sheets — Meeting History**
+    - Insert meeting information if it does not already exist.
+
+12. **Loop Over Items**
+    - Process extracted action items individually.
+
+13. **Google Sheets — Action Items Lookup**
+    - Check whether each Task ID already exists.
+
+14. **IF — New or Existing Task**
+    - Insert new tasks.
+    - Skip existing tasks.
+
+15. **Telegram — Send Message**
+    - Send the meeting report and storage status.
+
+16. **Error Branch**
+    - Notify the user about failed processing or storage.
+
+## Implementation Order
+
+Do not build all branches simultaneously.
+
+Recommended order:
+
+1. Telegram text input.
+2. Gemini structured extraction.
+3. JSON validation.
+4. Google Sheets insertion.
+5. Telegram summary.
+6. TXT upload support.
+7. Duplicate detection.
+8. Error handling.
+
+The first objective is a complete working text-based pipeline.
+
+---
+
+# 9. AI Prompt Requirements
+
+The Gemini system prompt must instruct the model to behave as a meeting analyst.
+
+It should:
+
+- Extract information only from the transcript.
+- Never fabricate owners, deadlines, decisions, or tasks.
+- Separate decisions from action items.
+- Return `null` for missing owners and deadlines.
+- Identify ambiguous deadlines.
+- Distinguish confirmed commitments from suggestions.
+- Avoid treating every discussed topic as an assigned task.
+- Return only valid JSON.
+- Follow the agreed output schema exactly.
+
+The prompt should also establish how relative dates are interpreted.
+
+For example:
+
+If a transcript says "next Friday", the model must use the meeting date and explicit date-resolution rules before producing a calendar date. If the reference is ambiguous, it must flag the ambiguity instead of guessing.
+
+The complete prompt should be maintained separately in:
+
+`prompts/meeting_analysis_prompt.md`
+
+The output schema should be maintained in:
+
+`schemas/meeting_output_schema.json`
+
+---
+
+# 10. Data Flow
+
+The complete user journey is:
+
+### Step 1 — Obtain Transcript
+
+The user obtains a textual meeting transcript.
+
+Possible sources:
+
+- Google Meet-generated transcript, if available to the account and enabled by the relevant Workspace configuration.
+- Manually prepared meeting notes.
+- A prepared TXT file.
+- Another transcription service.
+
+The MVP does not automatically record or transcribe meetings.
+
+### Step 2 — Submit Transcript
+
+The user sends the transcript to the Telegram bot.
+
+### Step 3 — Process Transcript
+
+n8n validates the input and forwards the transcript to Gemini.
+
+### Step 4 — Extract Information
+
+Gemini generates a structured meeting report.
+
+### Step 5 — Validate and Store
+
+n8n validates the JSON, checks for duplicates, and inserts meeting/task records into Google Sheets.
+
+### Step 6 — Deliver Report
+
+The bot sends the meeting summary, decisions, action items, and clarification requirements to Telegram.
+
+### Step 7 — Team Uses the Records
+
+Team members can access the shared Google Sheet to review and track their tasks.
+
+---
+
+# 11. Non-Functional Requirements
+
+## NFR-01: Reliability
+
+The system should handle common input and API failures without silently losing information.
+
+## NFR-02: Accuracy
+
+The AI should prioritize factual extraction over generating a complete-looking report.
+
+Missing information must remain missing rather than being fabricated.
+
+## NFR-03: Usability
+
+The system should require minimal technical knowledge from users.
+
+A user should be able to submit a transcript and receive the result through Telegram.
+
+## NFR-04: Maintainability
+
+The workflow should be modular and understandable.
+
+Prompts, schemas, validation scripts, and workflow exports should be stored separately in GitHub.
+
+## NFR-05: Security
+
+- API keys must not be committed to GitHub.
+- Telegram bot tokens must not be exposed.
+- Google OAuth credentials must remain private.
+- Workflow exports must be inspected for embedded credentials and sensitive configuration.
+- Google Sheets access should be restricted to authorized users.
+- Meeting transcripts may contain private information; avoid unnecessary retention or public sharing.
+
+## NFR-06: Performance
+
+The system should process normal-sized meeting transcripts within a reasonable waiting period, subject to API response time and n8n execution limits.
+
+## NFR-07: Data Integrity
+
+Invalid AI responses must not create database records.
+
+Duplicate detection should minimize repeated entries.
+
+---
+
+# 12. Testing and Validation Plan
+
+The MVP must be tested against multiple transcript scenarios.
+
+## Test Case 1: Normal Meeting
+
+**Input:** A meeting transcript containing clear tasks, owners, deadlines, and decisions.
+
+**Expected result:**
+- Correct summary.
+- Correct decisions.
+- Correct task extraction.
+- Correct owner identification.
+- Correct deadline extraction.
+- Records inserted into Google Sheets.
+- Telegram report delivered.
+
+## Test Case 2: Missing Information
+
+**Input:** A meeting transcript containing tasks without explicit owners or deadlines.
+
+**Expected result:**
+- Missing owner represented as `null`.
+- Missing deadline represented as `null`.
+- Status marked as Missing.
+- Clarification requirements generated.
+- No invented assignments.
+
+## Test Case 3: Duplicate Transcript
+
+**Input:** Submit the same transcript twice.
+
+**Expected result:**
+- Existing Meeting ID detected.
+- Duplicate meeting record avoided.
+- Existing tasks not inserted again.
+- User receives an appropriate notification.
+
+## Test Case 4: Invalid Input
+
+**Input:** Empty message, unsupported file, or unusable transcript.
+
+**Expected result:**
+- Input rejected.
+- Gemini is not called unnecessarily.
+- User receives a clear error message.
+
+## Test Case 5: Ambiguous Deadline
+
+**Input:** Transcript contains expressions such as "next Friday" or "by the end of next week" without sufficient date context.
+
+**Expected result:**
+- Ambiguous deadline identified.
+- No unsupported calendar date generated.
+- Clarification requested.
+
+## Test Case 6: No Action Items
+
+**Input:** A meeting transcript consisting only of general discussion and information sharing.
+
+**Expected result:**
+- Summary and decisions extracted where applicable.
+- Empty action-item array returned.
+- No artificial tasks inserted.
+
+## Test Case 7: Malformed AI Response
+
+**Input:** Simulate an invalid or incomplete Gemini response.
+
+**Expected result:**
+- Validation fails.
+- No database insertion takes place.
+- Appropriate failure notification is generated.
+
+## Test Case 8: Google Sheets Failure
+
+**Input:** Simulate a failed Sheets insertion or invalid authorization.
+
+**Expected result:**
+- Storage failure is detected.
+- System does not report successful persistence.
+- Failure is communicated to the user.
+
+---
+
+# 13. MVP Acceptance Criteria
+
+The project can be considered a successful MVP when the following conditions are satisfied.
+
+| ID | Acceptance Criteria |
+|---|---|
+| AC-01 | Telegram bot accepts pasted meeting transcripts. |
+| AC-02 | Telegram bot accepts TXT transcript files. |
+| AC-03 | n8n successfully processes both supported input types. |
+| AC-04 | Gemini returns structured meeting information. |
+| AC-05 | Decisions and action items are distinguished. |
+| AC-06 | Owners and deadlines are extracted when explicitly available. |
+| AC-07 | Missing information is flagged correctly. |
+| AC-08 | Invalid AI output is rejected before insertion. |
+| AC-09 | Meeting information is stored in Google Sheets. |
+| AC-10 | Action items are stored as individual records. |
+| AC-11 | Telegram receives the final meeting report. |
+| AC-12 | Repeated transcripts do not create duplicate records in normal sequential use. |
+| AC-13 | The GitHub repository contains sufficient documentation and evidence. |
+
+A working end-to-end demonstration is more important than implementing every proposed enhancement.
+
+---
+
+# 14. GitHub Repository Structure
+
+**Repository:** `meeting-to-action-bot`
+
+Recommended structure:
+
+```text
+meeting-to-action-bot/
+│
+├── README.md
+│
+├── workflows/
+│   └── meeting_to_action_workflow.json
+│
+├── prompts/
+│   └── meeting_analysis_prompt.md
+│
+├── schemas/
+│   └── meeting_output_schema.json
+│
+├── scripts/
+│   ├── validate_output.js
+│   └── generate_task_id.js
+│
+├── sample_data/
+│   ├── sample_meeting.txt
+│   ├── incomplete_meeting.txt
+│   ├── ambiguous_meeting.txt
+│   └── expected_output.json
+│
+├── screenshots/
+│   ├── workflow_overview.png
+│   ├── telegram_input.png
+│   ├── telegram_output.png
+│   └── google_sheets_output.png
+│
+└── docs/
+    └── architecture.md
+```
+
+Not every file is mandatory for the initial submission.
+
+## Minimum Submission Evidence
+
+1. GitHub repository with a meaningful README.
+2. Exported n8n workflow JSON.
+3. AI prompt and output schema.
+4. At least one sample transcript.
+5. Screenshot of the n8n workflow.
+6. Screenshot of Telegram input and output.
+7. Screenshot of the Google Sheets records.
+
+Never upload API keys, bot tokens, OAuth credentials, or private credentials.
+
+Before pushing the workflow export, inspect it for sensitive information.
+
+---
+
+# 15. Development Timeline and Immediate Constraints
+
+## Initial Shortlisting Submission
+
+**Project start:** 6 November 2026, approximately 9:00 PM IST.
+
+**Initial proof-of-work deadline:** 7 November 2026, 9:00 AM IST.
+
+The team has approximately 12 hours to prepare a working prototype and submit evidence.
+
+Teams will be shortlisted based on their proof of work.
+
+Selected teams will then participate in a 2-hour mentor-led development/evaluation round. Following that stage, 10 teams will be selected for pitching.
+
+## Recommended Overnight Schedule
+
+| Time | Activity |
+|---|---|
+| 9:00–9:30 PM | Repository, Telegram bot, Google Sheet, credentials, schema |
+| 9:30–11:00 PM | Telegram text input + Gemini extraction |
+| 11:00 PM–12:30 AM | JSON validation + Google Sheets integration |
+| 12:30–1:30 AM | Telegram report generation |
+| 1:30–2:30 AM | TXT upload support |
+| 2:30–4:00 AM | Duplicate handling and error handling |
+| 4:00–5:30 AM | Testing with sample transcripts |
+| 5:30–7:00 AM | README, documentation, screenshots |
+| 7:00–8:00 AM | Final workflow testing |
+| 8:00–9:00 AM | Buffer and submission |
+
+This is an aggressive schedule. If development falls behind, prioritize the working end-to-end pipeline over optional features.
+
+## Team Responsibilities
+
+For a team of three:
+
+**Member 1 — Workflow and Integration**
+- n8n workflow.
+- Telegram integration.
+- Gemini API integration.
+- Google Sheets integration.
+- Workflow export.
+
+**Member 2 — AI and Data Processing**
+- Gemini prompt engineering.
+- JSON schema.
+- Extraction logic.
+- Validation logic.
+- Test transcript preparation.
+
+**Member 3 — Documentation and Testing**
+- Telegram bot setup support.
+- Google Sheets setup support.
+- GitHub README.
+- Architecture documentation.
+- Screenshots and demo evidence.
+- End-to-end testing.
+
+Avoid multiple people editing the same n8n workflow simultaneously.
+
+---
+
+# 16. Mentor Evaluation and Technical Justification
+
+The team should be able to explain the following design decisions.
+
+## Why Gemini?
+
+Gemini provides natural-language understanding and structured information extraction.
+
+It can interpret conversational meeting transcripts and identify tasks, owners, deadlines, and decisions.
+
+## Why n8n?
+
+n8n provides workflow orchestration and integrations without requiring the team to implement every API interaction manually.
+
+It connects Telegram, Gemini, and Google Sheets while managing the sequence of operations.
+
+## Why Telegram?
+
+Telegram provides a lightweight, familiar interface for submitting transcripts and receiving reports.
+
+It avoids the need to develop a dedicated frontend for the initial prototype.
+
+## Why Google Sheets?
+
+Google Sheets provides simple persistent storage and a shared interface that student teams can access without building a database dashboard.
+
+## Is This an Autonomous AI Agent?
+
+The system uses AI for interpretation and information extraction, while n8n controls the workflow and performs deterministic operations.
+
+It is more accurately described as an AI-powered workflow automation system or AI assistant than as a fully autonomous agent.
+
+The team should not exaggerate its autonomy.
+
+## How Does It Handle Missing Owners?
+
+The system represents the owner as `null`, marks the owner status as Missing, and requests clarification.
+
+## How Does It Handle Invalid JSON?
+
+The system validates the Gemini response before allowing database insertion.
+
+Invalid responses are rejected or routed through a controlled retry/error branch.
+
+## How Does It Prevent Duplicate Tasks?
+
+It generates deterministic identifiers for meetings and tasks and checks existing records before insertion.
+
+## What Happens If Google Sheets Fails?
+
+The system detects the failed insertion and reports the storage failure. It must not claim that tasks were saved successfully.
+
+## Does It Automatically Record Meetings?
+
+No. The initial MVP processes transcripts supplied by the user.
+
+Automatic recording, meeting participation, and speech-to-text transcription are future enhancements.
+
+---
+
+# 17. Known Limitations
+
+The MVP has several limitations that should be acknowledged.
+
+1. It depends on users supplying a transcript.
+2. Extraction quality depends on transcript accuracy and Gemini's interpretation.
+3. Ambiguous conversations may require human clarification.
+4. Google Sheets is suitable for an MVP but is not a full-scale transactional database.
+5. Lookup-before-append duplicate detection is not fully concurrency-safe.
+6. The system does not automatically verify whether an assigned person accepted a task.
+7. Deadline interpretation requires reliable meeting-date context.
+8. The initial system does not automatically remind members about upcoming deadlines.
+9. Telegram and external API availability affect end-to-end execution.
+
+The system should be presented as a productivity assistant, not as a replacement for human confirmation.
+
+---
+
+# 18. Future Roadmap
+
+## Phase 1 — Working MVP
+- Telegram integration.
+- Transcript processing.
+- Gemini extraction.
+- Google Sheets persistence.
+- Structured Telegram report.
+
+## Phase 2 — Better Task Management
+- Task status updates.
+- Task reassignment.
+- Deadline reminders.
+- Member-wise task summaries.
+- Trello integration.
+
+## Phase 3 — Dashboard
+Develop a Streamlit dashboard containing:
+
+- Total meetings processed.
+- Total tasks extracted.
+- Pending tasks.
+- Completed tasks.
+- Overdue tasks.
+- Member-wise assignments.
+- Meeting history.
+- Task filtering.
+
+## Phase 4 — Automated Meeting Intelligence
+- Google Meet transcript integration where supported.
+- Audio transcription.
+- Meeting-specific context retention.
+- Follow-up meeting comparisons.
+- Detection of previously unresolved tasks.
+- More advanced analytics.
+
+---
+
+# 19. Definition of Success
+
+The primary success metric is whether the system can reliably transform a submitted meeting transcript into a useful, structured task record without requiring manual extraction.
+
+The ideal demonstration should show:
+
+1. A real or representative meeting transcript being submitted through Telegram.
+2. n8n executing the workflow.
+3. Gemini extracting decisions and action items.
+4. Missing owners and deadlines being identified.
+5. Google Sheets receiving the records.
+6. Telegram delivering the structured report.
+
+The demonstration should establish that the system is not merely a chatbot that summarizes text. It is an integrated workflow that converts meeting discussions into persistent, actionable records.
+
+---
+
+# 20. Instructions for Continuing Development in a New ChatGPT Conversation
+
+This section is specifically intended for context transfer.
+
+When this PRD is supplied to a new ChatGPT conversation, use the following instructions:
+
+1. Treat this document as the authoritative project specification.
+2. Continue development from the current implementation state instead of redesigning the project from scratch.
+3. Ask for the current implementation status only if it is not available in the conversation.
+4. Guide development step by step, especially for n8n node configuration.
+5. Explain the purpose of each node, its configuration, expected input, and expected output.
+6. Do not skip intermediate steps or assume a node is configured correctly without verification.
+7. Prioritize a functional MVP over unnecessary advanced architecture.
+8. Keep all implementations aligned with the stated deadline and event requirements.
+9. Help debug actual outputs and errors rather than providing generic troubleshooting advice.
+10. Keep GitHub documentation and submission evidence updated as the project evolves.
+11. Clearly distinguish implemented features from planned features.
+12. Do not claim that a feature works until it has been tested.
+
+## Current Development Context
+
+The developer has already gained practical experience with:
+
+- n8n workflow creation.
+- Telegram and AI-related workflow concepts.
+- Google Gemini API integration.
+- Structured AI output.
+- IF nodes.
+- Code nodes.
+- JSON parsing and processing.
+- Streamlit integration with n8n.
+- Streamlit Community Cloud deployment.
+
+The project should build on this experience.
+
+**Preferred development approach:** Implement the smallest working version first, test it, and then extend it incrementally.
+
+**Immediate next development milestone:**
+
+Build and verify the following pipeline:
+
+`Telegram Text Input → n8n → Gemini → Structured JSON → Google Sheets → Telegram Report`
+
+Once this pipeline works reliably, add TXT upload support, duplicate prevention, and error handling.
+
+---
+
+# END OF PRODUCT REQUIREMENTS DOCUMENT

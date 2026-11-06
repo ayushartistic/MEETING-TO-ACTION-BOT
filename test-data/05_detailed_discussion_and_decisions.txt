@@ -1,0 +1,44 @@
+DETAILED TEST TRANSCRIPT 05 — DISCUSSION, DECISIONS, AND OPEN QUESTIONS
+Meeting: Technology Selection and Feature Planning
+Date: 7 November 2026
+Participants: Priya (Lead), Kabir, Asha, Nikhil, Farhan
+
+Priya: We need to decide the database for the first release. The two options discussed in the previous meeting were MongoDB and PostgreSQL. Before deciding, let's hear the reasons.
+
+Kabir: MongoDB may be easier for us because the AI response contains nested information such as decisions, tasks, dependencies, and unresolved questions. We could store the response as a document without designing too many relational tables.
+
+Asha: I prefer PostgreSQL. We need to connect users, meetings, and tasks. We also need to search tasks by owner, status, and deadline. Relationships and consistency will matter when we add meeting history.
+
+Nikhil: We could use PostgreSQL for the main records and store the original AI response as JSON. That would give us structured relationships without losing the original response.
+
+Farhan: That sounds reasonable, but we should check whether our hosting plan supports the database properly.
+
+Priya: Is anyone strongly against PostgreSQL?
+
+Kabir: I am not against it. I only want us to consider how we will store the nested AI output.
+
+Asha: We can use JSONB for fields that need flexible structure. I think PostgreSQL is suitable.
+
+Priya: Then let's finalize PostgreSQL as the database for the first release. We will use relational tables for users, meetings, and tasks, and evaluate JSONB for additional structured details.
+
+Nikhil: Should we also add user authentication in the first release?
+
+Farhan: Authentication is important if multiple teams use the system, but it will increase the initial development effort.
+
+Kabir: We could consider Google sign-in later. For the first demonstration, perhaps a simple access mechanism is enough.
+
+Priya: We are not deciding the authentication approach today. Keep it as an open product question for the next planning meeting.
+
+Asha: What about automatic email reminders?
+
+Priya: That is also an idea for a later version. No one should start implementing it yet.
+
+Nikhil: We should document why we selected PostgreSQL and what alternatives we considered.
+
+Priya: Agreed. I will add the database decision to the project decision log. Nikhil, please prepare a short comparison of PostgreSQL and MongoDB for the technical documentation by 12 November.
+
+Nikhil: Yes, I will prepare the comparison by 12 November.
+
+Farhan: We also need to check hosting compatibility before deployment.
+
+Priya: Add hosting compatibility to the list of questions. We have not assigned an owner or deadline for that check yet.

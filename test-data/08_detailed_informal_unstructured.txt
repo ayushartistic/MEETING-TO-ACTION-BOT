@@ -1,0 +1,48 @@
+DETAILED TEST TRANSCRIPT 08 — INFORMAL, INTERRUPTED, AND UNSTRUCTURED DISCUSSION
+Meeting: Quick Product Catch-up
+Date: 7 November 2026
+Participants: Rahul, Ayush, Rohan, Neha
+
+Neha: Okay, is everyone here? We can start. The demo is coming up, and a few things are still not looking right.
+
+Rahul: Yeah, the UI thing on the main page is mostly done. I just need to fix that spacing issue near the cards and the button that moves around on smaller screens. I'll try to get that sorted by Saturday.
+
+Neha: Which button?
+
+Rahul: The one we discussed yesterday, near the bottom of the dashboard. I don't remember the exact component name. It's the action button that overlaps the card on mobile.
+
+Ayush: Wait, the API is still not ready. The response sometimes comes back with the task list as text instead of a proper array. I am checking the prompt and parser.
+
+Rohan: Hmm, I saw that too. But I think the database part is okay. I'll check the task records tomorrow because some of them are getting saved without a meeting reference.
+
+Neha: Is that a database problem or an API problem?
+
+Rohan: Not sure yet. I need to inspect the records and the request payload before I can say.
+
+Rahul: Once the API is ready, I can connect the task list. Right now I'm using sample data. The status labels are also temporary.
+
+Ayush: I can fix the array-format issue, but I need to test a few more transcripts. Some meetings have no tasks, and the model currently returns a sentence saying no tasks were found instead of an empty array.
+
+Neha: That's important. Please make sure the output is valid JSON even when there are no tasks.
+
+Ayush: Yes, I'll work on that. I haven't fixed the exact completion date yet.
+
+Rohan: I'll check those missing meeting references tomorrow. If the API payload is wrong, I'll send the details to Ayush.
+
+Neha: What about authentication? We mentioned it last time.
+
+Rahul: We can discuss it later. I haven't started that part.
+
+Neha: Fine. Don't start authentication now. First let's stabilize the current flow.
+
+Ayush: Also, someone should check whether the same task is being saved twice when a user submits the same transcript again.
+
+Rohan: I can look at the database records, but I don't know whether the duplicate check is implemented in n8n or in the backend.
+
+Neha: Let's inspect the workflow before assigning that. We shouldn't assume where the issue is.
+
+Rahul: By the way, the presentation screenshot is old. It still shows the previous dashboard.
+
+Neha: We need a new screenshot after the UI is fixed. I can capture it, but I can't promise when because I need the final build.
+
+Rohan: Okay, let's stop here. We have enough things to check.

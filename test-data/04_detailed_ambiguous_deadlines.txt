@@ -1,0 +1,26 @@
+DETAILED TEST TRANSCRIPT 04 — AMBIGUOUS AND RELATIVE DEADLINES
+Meeting: Product Development Catch-up
+Date: 7 November 2026
+Participants: Ishita, Rohan, Dev, Ananya
+
+Ishita: The login page is almost ready. I will finish the remaining validation messages and the password visibility option by next Friday. I still need to check the mobile layout, but I should be able to do that soon.
+
+Rohan: I will complete the API testing as soon as possible. The main endpoints are responding, but the authentication endpoint sometimes returns a 401 error even when the token is valid.
+
+Dev: I can investigate the authentication issue, but I need the latest server logs. Please share them with me before the next meeting.
+
+Ananya: I will update the database documentation before our next review. I have not started the indexing section yet, so I need to check the current schema first.
+
+Ishita: Can we say that the frontend will be ready by the end of the week?
+
+Rohan: Which week? We have not confirmed the exact date for the next review, and I don't want us to record a wrong deadline.
+
+Dev: The API issue is urgent. I will try to fix it quickly, but I cannot promise a particular day until I inspect the logs.
+
+Ananya: The documentation can be completed after the schema changes are finalized. If the schema changes again, I will need to update the diagrams too.
+
+Ishita: Okay, then I will finish the validation messages by next Friday, and the mobile layout will be done as soon as I can.
+
+Rohan: I will test the API after Dev shares the fix. We should not treat the testing as complete before that.
+
+Ananya: Let's confirm the exact calendar dates in the next meeting. The next meeting date itself is not decided yet.
