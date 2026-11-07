@@ -80,8 +80,8 @@
       "type": "@n8n/n8n-nodes-langchain.chainLlm",
       "typeVersion": 1.9,
       "position": [
-        800,
-        32
+        1232,
+        64
       ],
       "id": "d8a46b94-f37b-4daf-9fab-b01f687a7114",
       "name": "Basic LLM Chain"
@@ -93,15 +93,15 @@
       "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
       "typeVersion": 1.2,
       "position": [
-        848,
-        192
+        1280,
+        224
       ],
       "id": "28746aaf-12cf-4a65-9b32-3055666e06ef",
       "name": "Google Gemini Chat Model",
       "credentials": {
         "googlePalmApi": {
-          "id": "jzs3mgWiWl9LRyfW",
-          "name": "Google Gemini(PaLM) Api account"
+          "id": "Ss06puUwHZsxYytm",
+          "name": "Google Gemini(PaLM) Api account 2"
         }
       }
     },
@@ -112,8 +112,8 @@
       "type": "n8n-nodes-base.code",
       "typeVersion": 2,
       "position": [
-        1088,
-        16
+        1504,
+        80
       ],
       "id": "0e673946-994e-4315-8d1e-5dd26176548a",
       "name": "Code in JavaScript"
@@ -279,8 +279,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1648,
-        -16
+        2064,
+        80
       ],
       "id": "1fa14729-f0f4-4612-a5e5-73497b8a63b2",
       "name": "Append row in sheet",
@@ -367,8 +367,8 @@
       "type": "n8n-nodes-base.telegram",
       "typeVersion": 1.2,
       "position": [
-        128,
-        240
+        192,
+        256
       ],
       "id": "2e5c226a-54ed-4f9e-832d-b5a861e51c4f",
       "name": "Get a file",
@@ -436,8 +436,8 @@
       "type": "n8n-nodes-base.set",
       "typeVersion": 3.5,
       "position": [
-        592,
-        224
+        544,
+        240
       ],
       "id": "bd772b69-a877-4d27-b0b7-10b7fecaf7df",
       "name": "Edit Fields1"
@@ -453,8 +453,8 @@
       "type": "n8n-nodes-base.splitOut",
       "typeVersion": 1.1,
       "position": [
-        1328,
-        192
+        1728,
+        224
       ],
       "id": "8cb2c9f5-2623-4ccc-bb69-46ce75d7e302",
       "name": "Split Out"
@@ -601,8 +601,8 @@
       "type": "n8n-nodes-base.googleSheets",
       "typeVersion": 4.7,
       "position": [
-        1552,
-        192
+        1952,
+        208
       ],
       "id": "0336e71f-2ea5-40ad-af59-47d44aa397b3",
       "name": "Append row in sheet1",
@@ -610,6 +610,200 @@
         "googleSheetsOAuth2Api": {
           "id": "beJENBaMcc3CvfDy",
           "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "={{ $json.report_text }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1872,
+        -48
+      ],
+      "id": "086e30f0-c71c-44ef-8a63-dd4c05df80bd",
+      "name": "Send a text message",
+      "webhookId": "aea2e68a-abef-4502-91b7-f3250be4a97c",
+      "credentials": {
+        "telegramApi": {
+          "id": "RtW6TTg81WhPfg3U",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "\nconst inputItems = $input.all();\n\nfunction formatList(items, emptyMessage = \"None identified\") {\n  if (!Array.isArray(items) || items.length === 0) {\n    return emptyMessage;\n  }\n\n  return items.map((item, i) => `${i + 1}. ${item}`).join(\"\\n\");\n}\n\nfunction formatActionItems(items) {\n  if (!Array.isArray(items) || items.length === 0) {\n    return \"No action items identified.\";\n  }\n\n  return items.map((item, i) =>\n    `${i + 1}. ${item.task}\n   Owner: ${item.owner || \"Unassigned\"}\n   Deadline: ${item.deadline || \"Not specified\"}\n   Priority: ${item.priority || \"Unknown\"}\n   Status: ${item.owner_status || \"Unknown\"} / ${item.deadline_status || \"Unknown\"}`\n  ).join(\"\\n\\n\");\n}\n\nfunction formatConflicts(items) {\n  if (!Array.isArray(items) || items.length === 0) {\n    return \"No conflicts detected.\";\n  }\n\n  return items.map((item, i) =>\n    `${i + 1}. ${item.conflict} [${item.severity}]\n   ${item.explanation}\n   Participants: ${(item.involved_participants || []).join(\", \") || \"Not specified\"}`\n  ).join(\"\\n\\n\");\n}\n\nfunction formatRisks(items) {\n  if (!Array.isArray(items) || items.length === 0) {\n    return \"No risks detected.\";\n  }\n\n  return items.map((item, i) =>\n    `${i + 1}. ${item.risk} [${item.severity}]\n   ${item.reason}`\n  ).join(\"\\n\\n\");\n}\n\nconst output = [];\n\nfor (const input of inputItems) {\n  const data = input.json;\n\n  const report = [\n    \"MEETING ANALYSIS REPORT\",\n    \"=======================\",\n    `Meeting: ${data.meeting_title}`,\n    `Meeting ID: ${data.meeting_id}`,\n    \"\",\n    \"MEETING SUMMARY\",\n    data.meeting_summary || \"Not available.\",\n    \"\",\n    \"DECISIONS\",\n    formatList(data.decisions),\n    \"\",\n    \"ACTION ITEMS\",\n    formatActionItems(data.action_items),\n    \"\",\n    \"OPEN QUESTIONS\",\n    formatList(data.open_questions),\n    \"\",\n    \"CLARIFICATIONS REQUIRED\",\n    formatList(data.clarifications_required),\n    \"\",\n    \"CONFLICTS DETECTED\",\n    formatConflicts(data.conflicts_detected),\n    \"\",\n    \"POTENTIAL RISKS\",\n    formatRisks(data.risks)\n  ].join(\"\\n\");\n\n  // Split into messages without cutting words or lines.\n  const maxLength = 3900;\n  const chunks = [];\n  let currentChunk = \"\";\n\n  for (const line of report.split(\"\\n\")) {\n    if (currentChunk.length + line.length + 1 > maxLength) {\n      chunks.push(currentChunk);\n      currentChunk = \"\";\n    }\n\n    currentChunk += (currentChunk ? \"\\n\" : \"\") + line;\n  }\n\n  if (currentChunk) {\n    chunks.push(currentChunk);\n  }\n\n  chunks.forEach((chunk, index) => {\n    const message = chunks.length > 1\n      ? `PART ${index + 1}/${chunks.length}\\n\\n${chunk}`\n      : chunk;\n\n    output.push({\n      json: {\n        chat_id: data.chat_id,\n        report_text: message,\n        meeting_id: data.meeting_id,\n        part: index + 1,\n        total_parts: chunks.length\n      }\n    });\n  });\n}\n\nreturn output;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1632,
+        -48
+      ],
+      "id": "1a8be323-0b42-4d45-9a23-a1b75e9d37b3",
+      "name": "Build Tele report"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "f29bcc01-5aba-4343-85d7-c998c3586d02",
+              "leftValue": "={{ $json.message.document.file_name || '' }}",
+              "rightValue": ".txt",
+              "operator": {
+                "type": "string",
+                "operation": "endsWith"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        -48,
+        320
+      ],
+      "id": "dc2c44a4-74b2-427d-a536-17bbaf72ab9c",
+      "name": "If"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.message.chat.id }}",
+        "text": "⚠️ **Unsupported File Format**\n\nThe file you uploaded is not a supported format.\n\nPlease upload your meeting transcript as a `.txt` file.\n\n**Accepted format:** TXT (.txt)\n\nYour file has not been processed. Please try again with the correct format.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        176,
+        416
+      ],
+      "id": "a8ce50de-d65f-44e1-b371-14433ac445fa",
+      "name": "Send a text message1",
+      "webhookId": "44cb5752-96bc-4861-85a0-9c3c124ba79d",
+      "credentials": {
+        "telegramApi": {
+          "id": "RtW6TTg81WhPfg3U",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=\nYou are a meeting transcript validation system.\n\nYour task is to determine whether the provided content represents an actual meeting discussion.\n\nINPUT:\n{{ $json.transcript }}\n\nClassify the input into exactly ONE of these categories:\n\n1. VALID_TRANSCRIPT\nThe content represents an actual meeting discussion involving participants. It may contain project updates, questions, answers, proposals, disagreements, decisions, task assignments, or deadlines.\n\nEnglish, Hindi, and Hinglish are all acceptable. Informal conversations and missing speaker labels are acceptable.\n\n2. INVALID_INPUT\nThe content clearly does not represent a meeting discussion. Examples include programming code, unrelated personal messages, news articles, essays, recipes, stories, advertisements, or unrelated documents.\n\n3. UNCLEAR_INPUT\nThe content is too short, incomplete, or ambiguous to confidently establish whether it is a meeting discussion.\n\nIMPORTANT RULES:\n- Do not classify content as valid merely because it mentions a meeting.\n- Do not require formal formatting or speaker labels.\n- Do not reject a genuine meeting transcript simply because it is informal.\n- If there is insufficient context, choose UNCLEAR_INPUT.\n- Return only valid JSON. No Markdown, explanations, or code fences.\n\nRequired output format:\n{\n  \"classification\": \"VALID_TRANSCRIPT\",\n  \"reason\": \"Brief explanation of the classification\"\n}\n",
+        "batching": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.chainLlm",
+      "typeVersion": 1.9,
+      "position": [
+        672,
+        0
+      ],
+      "id": "3533b04c-197d-4c4b-bee0-42cfbe533b17",
+      "name": "Transcript Classifier"
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1.2,
+      "position": [
+        720,
+        240
+      ],
+      "id": "dc12f192-9eb4-41d9-90ed-0d92e6e9bf49",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "Ss06puUwHZsxYytm",
+          "name": "Google Gemini(PaLM) Api account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "\nconst rawOutput = $json.text;\n\nlet result;\n\ntry {\n  result = JSON.parse(rawOutput);\n} catch (error) {\n  throw new Error(\"Classifier returned invalid JSON: \" + error.message);\n}\n\nconst allowedCategories = [\n  \"VALID_TRANSCRIPT\",\n  \"INVALID_INPUT\",\n  \"UNCLEAR_INPUT\"\n];\n\nif (!allowedCategories.includes(result.classification)) {\n  throw new Error(\"Unexpected classification: \" + result.classification);\n}\n\nconst originalData = $(\"Edit Fields\").isExecuted\n  ? $(\"Edit Fields\").item.json\n  : $(\"Edit Fields1\").item.json;\n\nreturn {\n  json: {\n    ...originalData,\n    classification: result.classification,\n    classification_reason: result.reason\n  }\n};\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        944,
+        -112
+      ],
+      "id": "4b2b79c7-ac2b-4202-b291-925b8af260d1",
+      "name": "Validate Transcript Classification"
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "caseSensitive": true,
+            "leftValue": "",
+            "typeValidation": "strict",
+            "version": 4
+          },
+          "conditions": [
+            {
+              "id": "51aaedd0-566c-4b4f-81c2-73671a09d348",
+              "leftValue": "={{ $json.classification }}",
+              "rightValue": "VALID_TRANSCRIPT",
+              "operator": {
+                "type": "string",
+                "operation": "equals",
+                "name": "filter.operator.equals"
+              }
+            }
+          ],
+          "combinator": "and"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.if",
+      "typeVersion": 2.4,
+      "position": [
+        1088,
+        -64
+      ],
+      "id": "64df4fbe-ea6c-414d-a21c-d994754a8614",
+      "name": "If1"
+    },
+    {
+      "parameters": {
+        "chatId": "={{ $json.chat_id }}",
+        "text": "⚠️ Invalid Meeting Transcript  Your submitted content could not be identified as a valid meeting transcript.  Please submit an actual meeting conversation containing discussions between participants, project updates, decisions, or task-related discussions.  Supported formats: • Telegram text messages • .txt transcript files  Your submission has not been processed.  Please try again with a valid meeting transcript.",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1328,
+        -112
+      ],
+      "id": "f0695ad1-3662-4fcc-9913-019378380698",
+      "name": "Send a text message2",
+      "webhookId": "76dfc126-c48e-4d02-ac56-7e39b807e993",
+      "credentials": {
+        "telegramApi": {
+          "id": "RtW6TTg81WhPfg3U",
+          "name": "Telegram account"
         }
       }
     }
@@ -631,7 +825,7 @@
       "main": [
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Transcript Classifier",
             "type": "main",
             "index": 0
           }
@@ -672,6 +866,11 @@
             "node": "Split Out",
             "type": "main",
             "index": 0
+          },
+          {
+            "node": "Build Tele report",
+            "type": "main",
+            "index": 0
           }
         ]
       ]
@@ -687,7 +886,7 @@
         ],
         [
           {
-            "node": "Get a file",
+            "node": "If",
             "type": "main",
             "index": 0
           }
@@ -720,7 +919,7 @@
       "main": [
         [
           {
-            "node": "Basic LLM Chain",
+            "node": "Transcript Classifier",
             "type": "main",
             "index": 0
           }
@@ -737,6 +936,86 @@
           }
         ]
       ]
+    },
+    "Build Tele report": {
+      "main": [
+        [
+          {
+            "node": "Send a text message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Get a file",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Transcript Classifier",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Transcript Classifier": {
+      "main": [
+        [
+          {
+            "node": "Validate Transcript Classification",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Validate Transcript Classification": {
+      "main": [
+        [
+          {
+            "node": "If1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If1": {
+      "main": [
+        [
+          {
+            "node": "Basic LLM Chain",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Send a text message2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
     }
   },
   "active": false,
@@ -744,7 +1023,7 @@
     "executionOrder": "v1",
     "binaryMode": "separate"
   },
-  "versionId": "4109d48c-c32d-4a2c-8707-18810b9a9d3c",
+  "versionId": "ee247f35-8f56-40e1-b130-d5ef2e9f6e4d",
   "meta": {
     "templateCredsSetupCompleted": true,
     "instanceId": "7407e3411c46ce849ca73665045e4bde0fe3e2909dcb3a1120a771d1e458235e"
